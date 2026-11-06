@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Teppei Saishoji — Digital Card</title>
+<meta name="theme-color" content="#0b1530">
+<meta property="og:title" content="Teppei Saishoji — Digital Card">
+<meta property="og:description" content="CEO / Founder, SakusAI">
+<meta property="og:image" content="card.png">
+<style>
+:root{--navy:#14246b;--ink:#0b1530;--gold:#c9a96a;--paper:#fff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow-x:hidden;max-width:100%}
+body{
+  background:radial-gradient(120% 80% at 50% 0%,#1b2f7a 0%,#0b1530 60%,#070d20 100%);
+  color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP","Segoe UI",sans-serif;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100dvh;padding:max(20px,env(safe-area-inset-top)) 18px max(24px,env(safe-area-inset-bottom));
+  overflow-x:hidden;
+}
+#loader{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+  background:inherit;z-index:5;transition:opacity .5s ease .1s,visibility 0s .6s}
+#loader.done{opacity:0;visibility:hidden}
+.ring{width:46px;height:46px;border-radius:50%;border:2px solid rgba(255,255,255,.18);border-top-color:var(--gold);animation:spin .9s linear infinite}
+#loader p{margin:0;font-size:12px;letter-spacing:.28em;color:rgba(255,255,255,.65);text-transform:uppercase}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.stage{width:100%;max-width:520px;perspective:1100px;position:relative}
+.card{
+  width:100%;aspect-ratio:910/550;border-radius:6px;position:relative;overflow:hidden;background:#fff;
+  box-shadow:0 30px 60px -20px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.06);
+  opacity:0;transform:translateY(120px) rotateX(38deg) scale(.86);transform-origin:50% 100%;
+  will-change:transform,opacity;
+}
+.card img{display:block;width:100%;height:100%;-webkit-user-drag:none;user-select:none}
+.card::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.75) 50%,transparent 65%);
+  transform:translateX(-120%)}
+body.go .card{animation:rise 1.1s cubic-bezier(.2,.9,.25,1) .15s forwards}
+body.go .card::after{animation:shine 1.2s ease 1.15s forwards}
+@keyframes rise{
+  0%{opacity:0;transform:translateY(120px) rotateX(38deg) scale(.86)}
+  60%{opacity:1;transform:translateY(-8px) rotateX(-3deg) scale(1.01)}
+  100%{opacity:1;transform:translateY(0) rotateX(0) scale(1)}}
+@keyframes shine{to{transform:translateX(120%)}}
+.hit{position:absolute;z-index:3;display:block;border:0;padding:0;background:transparent;cursor:pointer;border-radius:4px;-webkit-appearance:none}
+.hit::after{content:"";position:absolute;left:4%;right:4%;bottom:8%;height:1.5px;background:var(--navy);opacity:0;transition:opacity .4s}
+body.go .hit::after{opacity:.55;transition-delay:2.4s}
+.hit:active{background:rgba(20,36,107,.12)}
+.glow{position:absolute;inset:auto 0 -40px 0;height:90px;background:radial-gradient(closest-side,rgba(201,169,106,.35),transparent);filter:blur(12px);opacity:0;transition:opacity 1s ease 1s}
+body.go .glow{opacity:1}
+
+.badge{display:flex;align-items:center;gap:10px;margin:26px 0 4px;opacity:0;transform:scale(.8);}
+body.go .badge{animation:pop .6s cubic-bezier(.2,1.4,.4,1) 1.5s forwards}
+.badge svg{width:30px;height:30px}
+.badge circle{fill:none;stroke:var(--gold);stroke-width:2;stroke-dasharray:90;stroke-dashoffset:90}
+.badge path{fill:none;stroke:var(--gold);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:30;stroke-dashoffset:30}
+body.go .badge circle{animation:draw .6s ease 1.55s forwards}
+body.go .badge path{animation:draw .4s ease 2s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes pop{to{opacity:1;transform:none}}
+.badge span{font-size:15px;letter-spacing:.12em}
+.sub{margin:0 0 22px;font-size:12px;color:rgba(255,255,255,.55);letter-spacing:.08em;opacity:0}
+body.go .sub{animation:fade .6s ease 1.9s forwards}
+
+.actions{width:100%;max-width:520px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{
+  appearance:none;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.07);color:#fff;
+  font:inherit;font-size:14px;font-weight:600;letter-spacing:.04em;text-decoration:none;
+  padding:14px 10px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:8px;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);cursor:pointer;
+  opacity:0;transform:translateY(14px);transition:background .2s,transform .15s;
+}
+.btn:active{transform:scale(.97)!important;background:rgba(255,255,255,.14)}
+.btn.primary{grid-column:1/-1;background:linear-gradient(135deg,#d9bd84,#b8934f);border-color:transparent;color:#1a1204;font-size:15px;padding:16px}
+.btn svg{width:18px;height:18px;flex:none}
+body.go .btn{animation:fadeup .55s ease forwards}
+body.go .btn:nth-child(1){animation-delay:2.0s}
+body.go .btn:nth-child(2){animation-delay:2.1s}
+body.go .btn:nth-child(3){animation-delay:2.2s}
+body.go .btn:nth-child(4){animation-delay:2.3s}
+@keyframes fadeup{to{opacity:1;transform:none}}
+@keyframes fade{to{opacity:1}}
+.hint{margin-top:16px;font-size:11px;color:rgba(255,255,255,.4);text-align:center;line-height:1.7;opacity:0}
+body.go .hint{animation:fade .6s ease 2.5s forwards}
+.toast{position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom));transform:translate(-50%,30px);background:#fff;color:#0b1530;
+  padding:11px 18px;border-radius:999px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:.3s;z-index:9;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+canvas#fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:4}
+@media (prefers-reduced-motion:reduce){
+  body.go .card{animation-duration:.01s;animation-delay:0s}
+  .ring{animation-duration:3s}
+}
+</style>
+</head>
+<body>
+<div id="loader"><div class="ring"></div><p id="ldt">Receiving card</p></div>
+<canvas id="fx"></canvas>
+
+<div class="stage">
+  <div class="card" id="card"><img id="img" src="card.png" alt="Teppei Saishoji business card" draggable="false">
+    <button class="hit" id="hit-mail" style="left:34%;top:78%;width:32%;height:6.4%" aria-label="Copy email"></button>
+    <a class="hit" id="hit-li" href="https://www.linkedin.com/in/teppeisaishoji/?locale=en" target="_blank" rel="noopener" style="left:32%;top:84%;width:36%;height:6.6%" aria-label="LinkedIn"></a>
+  </div>
+  <div class="glow"></div>
+</div>
+
+<div class="badge">
+  <svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="14"/><path d="M9.5 16.5l4.5 4.5 8.5-9.5"/></svg>
+  <span id="t-done">Card received</span>
+</div>
+<p class="sub" id="t-sub">Save it to keep in touch</p>
+
+<div class="actions">
+  <button class="btn primary" id="b-img"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 16l-5-5-9 9"/></svg><span id="t-img"></span></button>
+  <a class="btn" id="b-pdf" href="card.pdf" download="Teppei-Saishoji.pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5M9 14h6M9 17h4"/></svg><span id="t-pdf"></span></a>
+  <button class="btn" id="b-share"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg><span id="t-share"></span></button>
+  <a class="btn" id="b-vcf" href="https://www.linkedin.com/in/teppeisaishoji/?locale=en" target="_blank" rel="noopener" style="grid-column:1/-1"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 110-4.12 2.06 2.06 0 010 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg><span id="t-vcf"></span></a>
+</div>
+<div class="hint" id="t-hint"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const ja=(navigator.language||'').toLowerCase().startsWith('ja');
+const T=ja?{ld:'名刺を受け取り中',done:'名刺を受け取りました',sub:'保存して、いつでも見返せます',
+ img:'画像として保存（写真に追加）',pdf:'PDFで保存',share:'シェア',vcf:'LinkedInでつながる',
+ hint:'名刺のメールをタップでコピー、LinkedInをタップで開きます。<br>画像保存：共有メニューから「画像を保存」を選ぶと写真ライブラリに入ります。<br>名刺を長押ししても保存できます。',
+ saved:'共有メニューを開きました',dl:'画像をダウンロードしました',copied:'リンクをコピーしました',mail:'メールアドレスをコピーしました'}
+:{ld:'Receiving card',done:'Card received',sub:'Save it to keep in touch',
+ img:'Save image (to Photos)',pdf:'Save PDF',share:'Share',vcf:'Connect on LinkedIn',
+ hint:'Tap the email on the card to copy it, LinkedIn to open it.<br>Tap “Save Image” in the share sheet to add it to Photos.<br>You can also long-press the card.',
+ saved:'Share sheet opened',dl:'Image downloaded',copied:'Link copied',mail:'Email copied'};
+document.documentElement.lang=ja?'ja':'en';
+const $=id=>document.getElementById(id);
+$('ldt').textContent=T.ld;$('t-done').textContent=T.done;$('t-sub').textContent=T.sub;
+$('t-img').textContent=T.img;$('t-pdf').textContent=T.pdf;$('t-share').textContent=T.share;$('t-vcf').textContent=T.vcf;
+$('t-hint').innerHTML=T.hint;
+
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+
+// ---- entrance sequence
+const minWait=new Promise(r=>setTimeout(r,1100));
+const loaded=new Promise(r=>{const i=$('img');i.complete?r():(i.onload=i.onerror=r)});
+Promise.all([minWait,loaded]).then(()=>{
+  $('loader').classList.add('done');
+  setTimeout(()=>{document.body.classList.add('go');setTimeout(confetti,1500);if(navigator.vibrate)setTimeout(()=>navigator.vibrate(18),1550)},250);
+});
+
+// ---- subtle confetti (navy / gold)
+function confetti(){
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  const c=$('fx'),x=c.getContext('2d'),d=devicePixelRatio||1;
+  const W=document.documentElement.clientWidth,H=document.documentElement.clientHeight;c.width=W*d;c.height=H*d;x.scale(d,d);
+  const cols=['#c9a96a','#e6d3a3','#ffffff','#5a74d6'];
+  const y0=H*.62;
+  const mk=side=>Array.from({length:55},()=>{
+    const ang=(Math.random()*35+30)*Math.PI/180,sp=Math.random()*9+9;
+    return{x:side<0?-6:W+6,y:y0+(Math.random()-.5)*40,vx:-side*Math.cos(ang)*sp,vy:-Math.sin(ang)*sp,
+      s:Math.random()*5+3,a:Math.random()*6,va:(Math.random()-.5)*.4,c:cols[Math.random()*cols.length|0],l:1}});
+  const P=[...mk(-1),...mk(1)];
+  (function f(){x.clearRect(0,0,W,H);let alive=0;
+    for(const p of P){p.vy+=.28;p.vx*=.985;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;p.l-=.009;if(p.l<=0)continue;alive++;
+      x.save();x.globalAlpha=Math.max(p.l,0);x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()}
+    alive?requestAnimationFrame(f):x.clearRect(0,0,W,H)})();
+}
+
+// ---- subtle tilt on desktop pointer
+const card=$('card');
+addEventListener('pointermove',e=>{
+  if(e.pointerType!=='mouse'||!document.body.classList.contains('go'))return;
+  const r=card.getBoundingClientRect();
+  const dx=(e.clientX-(r.left+r.width/2))/innerWidth,dy=(e.clientY-(r.top+r.height/2))/innerHeight;
+  card.style.animation='none';card.style.opacity=1;card.style.transition='transform .2s';
+  card.style.transform=`rotateY(${dx*10}deg) rotateX(${-dy*10}deg)`;
+});
+
+// ---- on-card tap targets
+$('hit-mail').onclick=async()=>{
+  const m='t.saisho0802@gmail.com';
+  try{await navigator.clipboard.writeText(m)}catch(e){
+    const t=document.createElement('textarea');t.value=m;document.body.appendChild(t);t.select();
+    try{document.execCommand('copy')}catch(_){}t.remove()}
+  toast(T.mail);if(navigator.vibrate)navigator.vibrate(12);
+};
+
+// ---- actions
+async function getFile(){
+  const b=await (await fetch('card.png')).blob();
+  return new File([b],'Teppei-Saishoji.png',{type:'image/png'});
+}
+$('b-img').onclick=async()=>{
+  try{
+    const f=await getFile();
+    if(navigator.canShare&&navigator.canShare({files:[f]})){
+      await navigator.share({files:[f],title:'Teppei Saishoji'});toast(T.saved);return;
+    }
+  }catch(e){if(e&&e.name==='AbortError')return}
+  const a=document.createElement('a');a.href='card.png';a.download='Teppei-Saishoji.png';document.body.appendChild(a);a.click();a.remove();toast(T.dl);
+};
+$('b-share').onclick=async()=>{
+  const data={title:'Teppei Saishoji — SakusAI',text:'Teppei Saishoji (CEO / Founder, SakusAI)',url:location.href.split('#')[0]};
+  try{ if(navigator.share){await navigator.share(data);return} }catch(e){if(e&&e.name==='AbortError')return}
+  try{await navigator.clipboard.writeText(data.url);toast(T.copied)}catch(e){prompt('URL',data.url)}
+};
+</script>
+</body>
+</html>
